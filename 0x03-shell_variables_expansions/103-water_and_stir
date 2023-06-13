@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $((5#${WATER//water/}+5#${STIR//stir./})) | tr '01234567' 'bestchol'
+WATER="water"; STIR="stir."; BESTCHOL="bestchol"; sum=$((5#${WATER//[!water]/} + 5#${STIR//[!stir.]/})); echo $(printf "%d" $sum | tr '01234567' $BESTCHOL)
