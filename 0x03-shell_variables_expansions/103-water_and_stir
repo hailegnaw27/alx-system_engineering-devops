@@ -1,2 +1,2 @@
 #!/bin/bash
-printf result=$((5#${WATER//water/} + 5#${STIR//stir./})) echo ${result//01234567/bestchol}
+result=$((5#${WATER//water/} + 5#${STIR//stir./})) echo ${result//01234567/bestchol}
