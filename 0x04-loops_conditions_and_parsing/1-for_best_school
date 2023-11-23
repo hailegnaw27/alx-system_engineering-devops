@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# This script displays "Best School" 10 times and copies the output to a file
+
+output_file="best_school_output.txt"
+
+for ((i=0; i<10; i++)); do
+    echo "Best School"
+done | tee "$output_file"
+
+echo "Output copied to $output_file"
