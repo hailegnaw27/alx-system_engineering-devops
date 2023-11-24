@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Bash (init) script that manages manage_my_process
+
+PID_FILE="/var/run/my_process.pid"
+
+start_my_process() {
+    if [ -f "$PID     echo "manage_my_process is already started"
+    else
+        sudo ./manage_my_process &
+        PID=$!
+        echo "$PID" > "$PID_FILE"
+        echo "manage_my_process started"
+    fi
+}
+
+stop_my_process() {
+    if [ -f "$PID     sudo kill $(cat $PID_FILE)
+        sudo rm "$PID_FILE"
+        echo "manage_my_process stopped"
+    else
+        echo "manage_my_process is not running"
+    fi
+}
+
+restart_my_process() {
+    stop_my_process
+    start_my_process
+    echo "manage_my_process restarted"
+}
+
+case "$1" in
+    start)
+        start_my_process
+        ;;
+    stop)
+        stop_my_process
+        ;;
+    restart)
+        restart_my_process
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
