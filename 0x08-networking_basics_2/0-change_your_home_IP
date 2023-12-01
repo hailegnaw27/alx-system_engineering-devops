@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-# This script configures an Ubuntu server with the required IP changes
-
-# Update the hosts file to change localhost IP
+# This script configures an Ubuntu server with the required IP ch
 sudo sed -i 's/127.0.0.1/127.0.0.2/g' /etc/hosts
-
-# Update the DNS resolver configuration to change facebook.com IP
 sudo sed -i 's/157.240.11.35/8.8.8.8/g' /etc/resolv.conf
-
