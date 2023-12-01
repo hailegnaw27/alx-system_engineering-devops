@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Script to ping an IP address
-if [ $# -ne 1 ]; then
-    echo "Usage: 5-is_the_host_on_the_network {IP_ADDRESS}"
+# Check if an IP address is provided as an argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 {IP_ADDRESS}"
     exit 1
 fi
-ping -c 5 $1
+
+# Ping the IP 5 times
+for ((i=1; i<=5; i++)); do
+    ping -c 1 $1
+done
