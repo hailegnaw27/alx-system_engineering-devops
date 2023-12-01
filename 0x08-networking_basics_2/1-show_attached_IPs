@@ -1,16 +1,3 @@
 #!/usr/bin/env bash
 # This script displays all active IPv4 IPs on the machine
-
-# Get the list of network interfaces
-interfaces=$(ip -o -4 addr show | awk '{print $2}')
-
-# Iterate over the interfaces and display their IP addresses
-for interface in $interfaces; do
-  # Filter out loopback interface
-  if [[ $interface != "lo" ]]; then
-    # Get the IP address of the interface
-    ip=$(ip -o -4 addr show $interface | awk '{print $4}')
-    echo "$ip"
-  fi
-done
-
+ifconfig | grep -Eo 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print $2}'
