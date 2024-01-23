@@ -1,23 +1,27 @@
-#!/usr/bin/env bash
-# 404 redirection with nginx
+# This manifest installs ngix and adds redirect page
 
-sudo apt update -y
-sudo apt upgrade -y
-sudo apt install nginx -y
-sudo service nginx start
+package {'nginx':
+  ensure => present,
+  name   => 'nginx',
+}
 
-# Create a custom index page with "Ceci n'est pas une page"
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/index.nginx-debian.html
+file {'/var/www/html/index.html':
+  ensure  => present,
+  path    => '/var/www/html/index.html',
+  content => 'Hello World!',
+}
 
-# Add redirection for /redirect_me
-new_string='server_name _;\n\n\trewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;'
-sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-available/default
+file_line { 'redirect_me':
+  ensure => present,
+  path   => '/etc/nginx/sites-available/default',
+  after  => 'listen 80 default_server;',
+  line   => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;',
+}
 
-# Configure custom 404 page
-sudo sed -i 's/^\t}$/\t}\n\n\terror_page 404 \/404.html;/' /etc/nginx/sites-available/default
+service { 'nginx':
+  ensure     => running,
+  hasrestart => true,
+  require    => Package['nginx'],
+  subscribe  => File_line['redirect_me'],
+}
 
-# Create a custom 404 page with "Ceci n'est pas une page"
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
-
-sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-sudo service nginx restart
