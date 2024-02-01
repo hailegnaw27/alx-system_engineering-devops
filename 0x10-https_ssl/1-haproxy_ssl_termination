@@ -46,8 +46,8 @@ frontend web_server
 
 backend web_server
 	balance roundrobin
-	server 18718-web-01 18.210.10.210:80 check
-	server 18718-web-02 100.26.158.227:80 check
+	server 444129-web-01 18.210.10.210:80 check
+	server 444129-web-02 100.26.158.227:80 check
 
 backend letsencrypt-backend
 	server letsencrypt 127.0.0.1:54321
