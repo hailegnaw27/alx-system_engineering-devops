@@ -1,16 +1,12 @@
 #!/usr/bin/python3
-'''A script that gathers data from an external API and exports it to a CSV file.
-'''
-
-import re
+'''A script that gathers data from an external API and exports it to a CSV file.'''
 import csv
+import re
 import requests
 import sys
 
-
 API_URL = 'https://jsonplaceholder.typicode.com'
 '''The URL of the external API.'''
-
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
