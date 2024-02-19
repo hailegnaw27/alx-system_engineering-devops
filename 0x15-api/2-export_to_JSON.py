@@ -1,29 +1,38 @@
 #!/usr/bin/python3
-"""Exports to-do list information for a given employee ID to JSON format."""
+"""
+This script exports to-do list information for a given employee ID to JSON format.
+It utilizes the JSONPlaceholder API to retrieve the necessary data.
+"""
+
 import json
 import requests
 import sys
 
 if __name__ == "__main__":
+    # Get the employee ID from command line arguments
     user_id = sys.argv[1]
     url = "https://jsonplaceholder.typicode.com/"
-    user_response = requests.get(url + "users/{}".format(user_id))  # Get user data
-    todos_response = requests.get(url + "todos", params={"userId": user_id})  # Get to-do tasks for the user
 
-    if user_response.status_code == 200 and todos_response.status_code == 200:
-        user = user_response.json()  # Convert user response to JSON
-        todos = todos_response.json()  # Convert to-do tasks response to JSON
-        username = user.get("username")  # Get the username from the user data
+    # Retrieve user data based on the employee ID
+    user = requests.get(url + "users/{}".format(user_id)).json()
+    username = user.get("username")  # Get the username of the employee
 
-        data = {
-            "user_id": user_id,
-            "username": username,
-            "todos": todos
-        }
+    # Retrieve the to-do list of the employee
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-        with open("{}.json".format(user_id), "w") as jsonfile:
-            json.dump(data, jsonfile)  # Save the data as JSON
+    # Create a JSON object with the required information
+    data = {
+        user_id: [
+            {
+                "task": t.get("title"),  # Retrieve the title of each task
+                "completed": t.get("completed"),  # Check if the task is completed or not
+                "username": username  # Include the username in each task
+            } for t in todos
+        ]
+    }
 
-        print("Task information exported to JSON successfully.")
-    else:
-        print("Failed to retrieve data from JSONPlaceholder API. Please check the user ID.")
+    # Write the data to a JSON file named after the user ID
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump(data, jsonfile)
+
+    print("Task information exported to JSON successfully.")
