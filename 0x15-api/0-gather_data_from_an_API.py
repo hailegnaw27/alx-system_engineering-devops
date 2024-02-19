@@ -1,10 +1,13 @@
 #!/usr/bin/python3
-
+'''A script that gathers data from an API.
+'''
 import requests
 import sys
 
 
 API_URL = 'https://jsonplaceholder.typicode.com'
+'''The API's URL.'''
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -15,7 +18,6 @@ if __name__ == '__main__':
             employee_name = user_response.get('name')
             total_tasks = len(todos_response)
             completed_tasks = sum(task.get('completed') for task in todos_response)
-
             print(f'Employee {employee_name} is done with tasks({completed_tasks}/{total_tasks}):')
             for task in todos_response:
                 if task.get('completed'):
