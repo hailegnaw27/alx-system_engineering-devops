@@ -1,24 +1,31 @@
 #!/usr/bin/python3
+'''A script that gathers data from an external API and exports it to a CSV file.
+'''
 
+import re
 import csv
 import requests
 import sys
 
 
 API_URL = 'https://jsonplaceholder.typicode.com'
+'''The URL of the external API.'''
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        if sys.argv[1].isdigit():
-            id = int(sys.argv[1])
-            user_res = requests.get('{}/users/{}'.format(API_URL, id)).json()
-            todos_res = requests.get('{}/todos'.format(API_URL)).json()
-            user_name = user_res.get('name')
-            todos = list(filter(lambda x: x.get('userId') == id, todos_res))
+        if re.fullmatch(r'\d+', sys.argv[1]):
+            employee_id = int(sys.argv[1])
+            # Fetch user details from the API
+            user_response = requests.get(f'{API_URL}/users/{employee_id}').json()
+            # Fetch tasks for the user from the API
+            todos_response = requests.get(f'{API_URL}/todos?userId={employee_id}').json()
+            employee_name = user_response.get('username')
 
-            with open(f'{id}.csv', mode='w', newline='') as file:
+            with open(f'{employee_id}.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
-                for todo in todos:
-                    writer.writerow([id, user_name, todo.get('completed'), todo.get('title')])
+                # Write each task as a row in the CSV file
+                for task in todos_response:
+                    writer.writerow([employee_id, employee_name, task.get('completed'), task.get('title')])
