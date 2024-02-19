@@ -1,33 +1,20 @@
 #!/usr/bin/python3
-'''A script that gathers data from an external API and exports it to a CSV file.'''
+"""Exports to-do list information for a given employee ID to CSV format."""
 import csv
-import re
 import requests
 import sys
 
-API_URL = 'https://jsonplaceholder.typicode.com'
-'''The URL of the external API.'''
+if __name__ == "__main__":
+    user_id = sys.argv[1]
+    url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(url + "users/{}".format(user_id)).json()
+    username = user.get("username")
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if re.fullmatch(r'\d+', sys.argv[1]):
-            employee_id = int(sys.argv[1])
-            # Fetch user details from the API
-            user_response = requests.get(f'{API_URL}/users/{employee_id}').json()
-            # Fetch tasks for the user from the API
-            todos_response = requests.get(f'{API_URL}/todos?userId={employee_id}').json()
-            employee_name = user_response.get('username')
+    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        [writer.writerow(
+            [user_id, username, t.get("completed"), t.get("title")]
+         ) for t in todos]
 
-            with open(f'{employee_id}.csv', mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-                # Write each task as a row in the CSV file
-                for task in todos_response:
-                    writer.writerow([employee_id, employee_name, task.get('completed'), task.get('title')])
-
-            # Verify the user ID and username
-            if user_response.get('id') == employee_id and user_response.get('username') == employee_name:
-                print("User ID and Username: OK")
-            else:
-                print("User ID: Incorrect / Username: Incorrect")
+    print("Task information exported to CSV successfully.")
