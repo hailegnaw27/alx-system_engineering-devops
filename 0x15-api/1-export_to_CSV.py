@@ -25,3 +25,9 @@ if __name__ == '__main__':
                 # Write each task as a row in the CSV file
                 for task in todos_response:
                     writer.writerow([employee_id, employee_name, task.get('completed'), task.get('title')])
+
+            # Verify the user ID and username
+            if user_response.get('id') == employee_id and user_response.get('username') == employee_name:
+                print("User ID and Username: OK")
+            else:
+                print("User ID: Incorrect / Username: Incorrect")
