@@ -1,57 +1,34 @@
 #!/usr/bin/python3
-"""
-Recursive function that queries the Reddit API and returns
-a list containing the titles of all hot articles for a given
-subreddit.
-"""
+""" recursive function that queries the Reddit API """
 import requests
+import sys
+after = None
 
 
-def recurse(subreddit, hot_list=[], after=None):
-    """
-    Recursively queries the Reddit API and returns a list containing
-    the titles of all hot articles for the given subreddit.
-
-    Args:
-        subreddit (str): The name of the subreddit.
-        hot_list (list): The list to store the article titles. (Default [])
-        after (str): The last post ID of the previous page. (Default None)
-
+def recurse(subreddit, hot_list=[]):
+    """     Args:
+        subreddit: subreddit name
+        hot_list: list of hot titles in subreddit
+        after: last hot_item appended to hot_list
     Returns:
-        list: A list containing the titles of all hot articles.
-        None: If the subreddit is invalid or no results are found.
-    """
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {"User-Agent": "xica369"}
-    params = {"limit": 100, "after": after}
-    response = requests.get(url, headers=headers, params=params, allow_redirects=False)
+        a list containing the titles of all hot articles for the subreddit
+        or None if queried subreddit is invalid """
+    global after
+    headers = {'User-Agent': 'xica369'}
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    parameters = {'after': after}
+    response = requests.get(url, headers=headers, allow_redirects=False,
+                            params=parameters)
 
     if response.status_code == 200:
-        data = response.json().get("data")
-        if data:
-            children = data.get("children")
-            for post in children:
-                title = post.get("data").get("title")
-                hot_list.append(title)
-            after = data.get("after")
-            if after:
-                return recurse(subreddit, hot_list, after)
-            else:
-                return hot_list
-        else:
-            return None
+        next_ = response.json().get('data').get('after')
+        if next_ is not None:
+            after = next_
+            recurse(subreddit, hot_list)
+        list_titles = response.json().get('data').get('children')
+        for title_ in list_titles:
+            hot_list.append(title_.get('data').get('title'))
+        return hot_list
     else:
-        return None
+        return (None)
 
-
-if __name__ == "__main__":
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Please pass an argument for the subreddit to search.")
-    else:
-        result = recurse(sys.argv[1])
-        if result is not None:
-            print(len(result))
-        else:
-            print("None")t add .
