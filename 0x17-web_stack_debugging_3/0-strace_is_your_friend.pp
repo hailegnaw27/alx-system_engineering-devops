@@ -1,14 +1,6 @@
-# Puppet manifest to fix Apache 500 error
+# Fixes bad `phpp` extensions
 
-exec { 'fix_apache_error':
-  command     => 'service apache2 restart',
-  path        => '/usr/bin',
-  onlyif      => 'curl -sI 127.0.0.1 | grep "500 Internal Server Error"',
-  require     => Package['apache2'],
+exec { 'fix-wordpress':
+  command => 'sed -i s/phpp/php/g /var/www/html/wp-settings.php',
+  path    => '/usr/local/bin/:/bin/'
 }
-
-service { 'apache2':
-  ensure  => running,
-  enable  => true,
-}
-
