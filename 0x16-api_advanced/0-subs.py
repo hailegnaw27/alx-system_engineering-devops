@@ -1,22 +1,16 @@
 #!/usr/bin/python3
-# pylint: disable=invalid-name
-"""
-Contains the number_of_subscribers function
-"""
-
+"""Function to query subscribers on a given Reddit subreddit."""
 import requests
 
 
 def number_of_subscribers(subreddit):
-    """
-    Returns the number of subscribers for a given subreddit.
-    """
-    if subreddit is None or not isinstance(subreddit, str):
-        return 0
+    """Return the total number of subscribers on a given subreddit."""
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
     headers = {
-        'User-Agent': '0x16-api_advanced:project:v1.0.0 (by /u/firdaus_cartoon_jr)'
+        "User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"
     }
-    url = f'http://www.reddit.com/r/{subreddit}/about.json'
-    response = requests.get(url, headers=headers, timeout=5).json()
-    subscribers = response.get("data", {}).get("subscribers", 0)
-    return subscribers
+    response = requests.get(url, headers=headers, allow_redirects=False)
+    if response.status_code == 404:
+        return 0
+    results = response.json().get("data")
+    return results.get("subscribers")
